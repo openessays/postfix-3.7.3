@@ -103,7 +103,7 @@ mail_owner = postfix
 # $mydomain is used as a default value for many other configuration
 # parameters.
 #
-#mydomain = domain.tld
+mydomain = mit.edu
 
 # SENDING MAIL
 # 
@@ -119,7 +119,7 @@ mail_owner = postfix
 # to recipient addresses that have no @domain part.
 #
 #myorigin = $myhostname
-#myorigin = $mydomain
+myorigin = $mydomain
 
 # RECEIVING MAIL
 
@@ -133,7 +133,7 @@ mail_owner = postfix
 #
 # Note: you need to stop/start Postfix when this parameter changes.
 #
-#inet_interfaces = all
+inet_interfaces = all
 #inet_interfaces = $myhostname
 #inet_interfaces = $myhostname, localhost
 
@@ -181,7 +181,7 @@ mail_owner = postfix
 # See also below, section "REJECTING MAIL FOR UNKNOWN LOCAL USERS".
 #
 #mydestination = $myhostname, localhost.$mydomain, localhost
-#mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
 #mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain,
 #	mail.$mydomain, www.$mydomain, ftp.$mydomain
 
@@ -270,7 +270,7 @@ unknown_local_recipient_reject_code = 550
 # 
 #mynetworks_style = class
 #mynetworks_style = subnet
-#mynetworks_style = host
+mynetworks_style = host
 
 # Alternatively, you can specify the mynetworks list by hand, in
 # which case Postfix ignores the mynetworks_style setting.
@@ -317,7 +317,7 @@ unknown_local_recipient_reject_code = 550
 # list this system as their primary or backup MX host. See the
 # permit_mx_backup restriction description in postconf(5).
 #
-#relay_domains = 
+relay_domains = $mydomain
 
 # INTERNET OR INTRANET
 
@@ -410,6 +410,7 @@ unknown_local_recipient_reject_code = 550
 #alias_maps = hash:/etc/aliases
 #alias_maps = hash:/etc/aliases, nis:mail.aliases
 #alias_maps = netinfo:/aliases
+alias_maps = hash:/etc/postfix/aliases
 
 # The alias_database parameter specifies the alias database(s) that
 # are built with "newaliases" or "sendmail -bi".  This is a separate
@@ -420,6 +421,7 @@ unknown_local_recipient_reject_code = 550
 #alias_database = dbm:/etc/mail/aliases
 #alias_database = hash:/etc/aliases
 #alias_database = hash:/etc/aliases, hash:/opt/majordomo/aliases
+alias_database = hash:/etc/postfix/aliases
 
 # ADDRESS EXTENSIONS (e.g., user+foo)
 #
@@ -441,6 +443,7 @@ unknown_local_recipient_reject_code = 550
 #
 #home_mailbox = Mailbox
 #home_mailbox = Maildir/
+home_mailbox = ../../tmp/inbox
  
 # The mail_spool_directory parameter specifies the directory where
 # UNIX-style mailboxes are kept. The default setting depends on the
@@ -575,7 +578,7 @@ unknown_local_recipient_reject_code = 550
 # RFC requirement. Postfix itself does not care.
 #
 #smtpd_banner = $myhostname ESMTP $mail_name
-#smtpd_banner = $myhostname ESMTP $mail_name ($mail_version)
+smtpd_banner = $myhostname ESMTP $mail_name ($mail_version)
 
 # PARALLEL DELIVERY TO THE SAME DESTINATION
 #
@@ -608,7 +611,7 @@ debug_peer_level = 2
 # increase the verbose logging level by the amount specified in the
 # debug_peer_level parameter.
 #
-#debug_peer_list = 127.0.0.1
+debug_peer_list = 127.0.0.1
 #debug_peer_list = some.domain
 
 # The debugger_command specifies the external command that is executed
@@ -648,38 +651,50 @@ debugger_command =
 # sendmail_path: The full pathname of the Postfix sendmail command.
 # This is the Sendmail-compatible mail posting interface.
 # 
-sendmail_path =
+#sendmail_path =
 
 # newaliases_path: The full pathname of the Postfix newaliases command.
 # This is the Sendmail-compatible command to build alias databases.
 #
-newaliases_path =
+#newaliases_path =
 
 # mailq_path: The full pathname of the Postfix mailq command.  This
 # is the Sendmail-compatible mail queue listing command.
 # 
-mailq_path =
+#mailq_path =
 
 # setgid_group: The group for mail submission and queue management
 # commands.  This must be a group name with a numerical group ID that
 # is not shared with other accounts, not even with the Postfix account.
 #
-setgid_group =
+#setgid_group = nobody
 
 # html_directory: The location of the Postfix HTML documentation.
 #
-html_directory =
+#html_directory =
 
 # manpage_directory: The location of the Postfix on-line manual pages.
 #
-manpage_directory =
+#manpage_directory =
 
 # sample_directory: The location of the Postfix sample configuration files.
 # This parameter is obsolete as of Postfix 2.1.
 #
-sample_directory =
+#sample_directory =
 
 # readme_directory: The location of the Postfix README files.
 #
-readme_directory =
-inet_protocols = ipv4
+#readme_directory =
+
+# log to file,
+maillog_file_prefixes = /tmp
+# https://www.postfix.org/MAILLOG_README.html
+#maillog_file = /var/log/postfix.log
+maillog_file = /tmp/postfix.log
+
+# https://www.postfix.org/ADDRESS_REWRITING_README.html
+virtual_alias_maps = hash:/etc/postfix/virtual
+
+dovecot_destination_recipient_limit = 1
+virtual_mailbox_domains = ocwmit.tk
+virtual_transport = dovecot
